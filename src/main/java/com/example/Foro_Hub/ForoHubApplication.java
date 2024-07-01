@@ -10,7 +10,7 @@ public class ForoHubApplication {
 	public static void main(String[] args) {
 		System.out.println("Hola mundo");
 		SpringApplication.run(ForoHubApplication.class, args);
-		System.out.println("hola mundo crack");
+
 	}
 
 }
