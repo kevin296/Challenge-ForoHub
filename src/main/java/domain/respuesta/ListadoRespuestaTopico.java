@@ -1,5 +1,7 @@
 package domain.respuesta;
 
+import java.time.LocalDateTime;
+
 public record ListadoRespuestaTopico(
         Long id,
         String mensaje,
@@ -10,7 +12,7 @@ public record ListadoRespuestaTopico(
 
 
 ) {
-    public DatosListadoRespuestaEnTopico(Respuesta respuesta){
+    public ListadoRespuestaTopico(Respuesta respuesta){
         this(respuesta.getId(), respuesta.getMensaje(), respuesta.getFecha_creacion(),
                 respuesta.getAutor().getNombre(), respuesta.getSolucion());
     }

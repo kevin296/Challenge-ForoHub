@@ -1,7 +1,7 @@
 package domain.topico;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
 
 public record ListadoTopico(Long id,
                             String titulo,

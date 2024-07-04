@@ -1,5 +1,8 @@
 package domain.user;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.util.UriComponentsBuilder;
+
 public class UsuarioService {
 
     @Autowired
@@ -8,13 +11,13 @@ public class UsuarioService {
     @Autowired
     List<ValidadorDeUsuarios> validadores;
 
-    public ResponseEntity<DatosRespuestaUsuario> registarUsuario(DatosRegistroUsuario datosRegistroUsuario,
-                                                                 UriComponentsBuilder uriComponentsBuilder) {
-        var usuario = new Usuario(datosRegistroUsuario);
+    public ResponseEntity<RespuestaUsuario> registarUsuario(RegistroUsuario datosRegistroUsuario,
+                                                            UriComponentsBuilder uriComponentsBuilder) {
+        var usuario = new Usuario(registroUsuario);
         validadores.forEach(v -> v.validar(datosRegistroUsuario));
         Usuario usuarioConId = usuarioRepository.save(usuario);
 
-        DatosRespuestaUsuario datosRespuestaUsuario = new DatosRespuestaUsuario(usuarioConId);
+        RespuestaUsuario datosRespuestaUsuario = new DatosRespuestaUsuario(usuarioConId);
         URI url = uriComponentsBuilder.path("/usuarios/{id}").buildAndExpand(usuarioConId.getId()).toUri();
 
         return ResponseEntity.created(url).body(datosRespuestaUsuario);

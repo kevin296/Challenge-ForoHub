@@ -1,8 +1,18 @@
 package domain.respuesta;
 
+import domain.topico.ListadoTopico;
+import domain.topico.Topico;
 import domain.topico.TopicoRepository;
+import domain.user.Usuario;
 import domain.user.UsuarioRepository;
+import infra.ValidacionIntegridad;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
 
 public class RespuestaService {
 
@@ -16,75 +26,74 @@ public class RespuestaService {
     private UsuarioRepository usuarioRepository;
 
 
-    public ResponseEntity<DatosRetornoRespuesta> registrarRespuesta(DatosRegistroRespuesta datosRegistroRespuesta,
-                                                                    UriComponentsBuilder uriComponentsBuilder) {
+    public ResponseEntity<RetornoRespuesta> registroRespuesta(RegistroRespuesta registroRespuesta,
+                                                              UriComponentsBuilder uriComponentsBuilder) {
 
-        if (topicoRepository.findById(datosRegistroRespuesta.topico_id()).isEmpty()){
-            throw new ValidacionDeIntegridad("El tópico de la respuesta no fue encontrado. Revise el id.");
+        if (topicoRepository.findById(registroRespuesta.topico_id()).isEmpty()){
+            throw new ValidacionIntegridad("El tópico de la respuesta no fue encontrado. Revise el id.");
         }
 
-        if (usuarioRepository.findById(datosRegistroRespuesta.usuario_id()).isEmpty()){
-            throw new ValidacionDeIntegridad("El autor de la respuesta no fue encontrado. Revise el id.");
+        if (usuarioRepository.findById(registroRespuesta.usuario_id()).isEmpty()){
+            throw new ValidacionIntegridad("El autor de la respuesta no fue encontrado. Revise el id.");
         }
 
-        Topico topico = topicoRepository.getReferenceById(datosRegistroRespuesta.topico_id());
-        Usuario autor = usuarioRepository.getReferenceById(datosRegistroRespuesta.usuario_id());
-        Respuesta respuesta = new Respuesta(datosRegistroRespuesta, topico, autor);
+        Topico topico = topicoRepository.getReferenceById(registroRespuesta.topico_id());
+        Usuario autor = usuarioRepository.getReferenceById(registroRespuesta.usuario_id());
+        Respuesta respuesta = new Respuesta(registroRespuesta, topico, autor);
         Respuesta respuestaRet = respuestaRepository.save(respuesta);
 
-        DatosRetornoRespuesta datosRetornoRespuesta = new DatosRetornoRespuesta(respuestaRet.getId(), respuestaRet.getMensaje(),
-                respuestaRet.getFecha_creacion(), new DatosListadoTopico(respuestaRet.getTopico()),
+        RetornoRespuesta retornoRespuesta = new RetornoRespuesta(respuestaRet.getId(), respuestaRet.getMensaje(),
+                respuestaRet.getFecha_creacion(), new ListadoTopico(respuestaRet.getTopico()),
                 respuestaRet.getAutor().getNombre(), respuestaRet.getSolucion());
 
         URI url = uriComponentsBuilder.path("/respuestas/{id}").buildAndExpand(respuestaRet.getId()).toUri();
 
-        return ResponseEntity.created(url).body(datosRetornoRespuesta);
+        return ResponseEntity.created(url).body(retornoRespuesta);
 
     }
 
-    public ResponseEntity<DatosRetornoRespuesta> actualizarRespuesta(DatosActualizarRespuesta datosActualizarRespuesta,
+    public ResponseEntity<RetornoRespuesta> actualizarRespuesta(ActualizarRespuesta actualizarRespuesta,
                                                                      Long id, UriComponentsBuilder uriComponentsBuilder) {
         Topico topico = null;
         Usuario usuario = null;
         if (respuestaRepository.findById(id).isEmpty()){
-            throw new ValidacionDeIntegridad("La respuesta no fue encontrada. Verifique el id.");
+            throw new ValidacionIntegridad("La respuesta no fue encontrada. Verifique el id.");
         }
 
-        if (datosActualizarRespuesta.topico_id() != null){
-            if (topicoRepository.findById(datosActualizarRespuesta.topico_id()).isEmpty()){
-                throw new ValidacionDeIntegridad("El tópico de la respuesta no fue encontrado. Verifique el id.");
+        if (actualizarRespuesta.topico_id() != null){
+            if (topicoRepository.findById(actualizarRespuesta.topico_id()).isEmpty()){
+                throw new ValidacionIntegridad("El tópico de la respuesta no fue encontrado. Verifique el id.");
             }
-            topico = topicoRepository.findById(datosActualizarRespuesta.topico_id()).get();
+            topico = topicoRepository.findById(actualizarRespuesta.topico_id()).get();
         }
 
-        if (datosActualizarRespuesta.usuario_id() != null){
-            if (usuarioRepository.findById(datosActualizarRespuesta.usuario_id()).isEmpty()){
-                throw new ValidacionDeIntegridad("El usuario de la respuesta no fue encontrado. Verifique el id.");
+        if (actualizarRespuesta.usuario_id() != null){
+            if (usuarioRepository.findById(actualizarRespuesta.usuario_id()).isEmpty()){
+                throw new ValidacionIntegridad("El usuario de la respuesta no fue encontrado. Verifique el id.");
             }
-            usuario = usuarioRepository.findById(datosActualizarRespuesta.usuario_id()).get();
+            usuario = usuarioRepository.findById(actualizarRespuesta.usuario_id()).get();
         }
 
         Respuesta respuesta = respuestaRepository.getReferenceById(id);
-        respuesta.actualizarDatos(datosActualizarRespuesta, topico, usuario);
-
-        DatosRetornoRespuesta datosRetornoRespuesta = new DatosRetornoRespuesta(respuesta.getId(), respuesta.getMensaje(),
-                respuesta.getFecha_creacion(), new DatosListadoTopico(respuesta.getTopico()), respuesta.getAutor().getNombre(), respuesta.getSolucion());
+        respuesta.actualizarDatos(actualizarRespuesta, topico, usuario);
+        RetornoRespuesta retornoRespuesta = new RetornoRespuesta(respuesta.getId(), respuesta.getMensaje(),
+                respuesta.getFecha_creacion(), new ListadoTopico(respuesta.getTopico()), respuesta.getAutor().getNombre(), respuesta.getSolucion());
 
         URI url = uriComponentsBuilder.path("/respuestas/{id}").buildAndExpand(respuesta.getId()).toUri();
 
-        return ResponseEntity.created(url).body(datosRetornoRespuesta);
+        return ResponseEntity.created(url).body(retornoRespuesta);
     }
 
     public ResponseEntity<Page> listarRespuestas(Pageable paginacion) {
         return ResponseEntity.ok(respuestaRepository.listarRespuestas(paginacion)
-                .map(DatosListadoRespuesta::new));
+                .map(ListadoRespuesta::new));
     }
 
 
     public ResponseEntity eliminarRespuesta(Long id) {
 
         if (respuestaRepository.findById(id).isEmpty()){
-            throw new ValidacionDeIntegridad("La respuesta no fue encontrada. Verifique el id.");
+            throw new ValidacionIntegridad("La respuesta no fue encontrada. Verifique el id.");
         }
 
         respuestaRepository.borrarRespuesta(id);

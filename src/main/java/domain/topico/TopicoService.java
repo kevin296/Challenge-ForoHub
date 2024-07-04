@@ -1,6 +1,19 @@
 package domain.topico;
 
+import Validaciones.ValidacionTopico.ValidacionTopico;
+import domain.curso.Curso;
+import domain.curso.CursoRepository;
+import domain.user.Usuario;
+import domain.user.UsuarioRepository;
+import infra.ValidacionIntegridad;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.util.List;
 
 public class TopicoService {
     @Autowired
@@ -13,26 +26,26 @@ public class TopicoService {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    List<ValidadorDeTopicos> validadores;
+    List<ValidacionTopico> validar;
 
-    public ResponseEntity<DatosRespuestaTopico> registrar(DatosRegistroTopico datosRegistroTopico, UriComponentsBuilder uriComponentsBuilder){
+    public ResponseEntity<RespuestaTopico> registrar(RegistroTopico registroTopico, UriComponentsBuilder uriComponentsBuilder){
 
-        if (cursoRepository.findByNombreContainsIgnoreCase(datosRegistroTopico.nombreCurso()).isEmpty()){
-            throw new ValidacionDeIntegridad("El curso no fue encontrado");
+        if (cursoRepository.findByNombreContainsIgnoreCase(registroTopico.nombre_Curso()).isEmpty()){
+            throw new ValidacionIntegridad("El curso no fue encontrado");
         }
 
         if (usuarioRepository.findById(datosRegistroTopico.usuario_id()).isEmpty()){
-            throw new ValidacionDeIntegridad("El usuario no fue encontrado");
+            throw new ValidacionIntegridad("El usuario no fue encontrado");
         }
 
-        validadores.forEach(v -> v.validar(datosRegistroTopico));
+        validadores.forEach(v -> v.validar(registroTopico));
 
-        var topico = new Topico(datosRegistroTopico);
-        topico.setCurso(cursoRepository.findByNombreContainsIgnoreCase(datosRegistroTopico.nombreCurso()).get());
-        topico.setAutor(usuarioRepository.findById(datosRegistroTopico.usuario_id()).get());
+        var topico = new Topico(registroTopico);
+        topico.setCurso(cursoRepository.findByNombreContainsIgnoreCase(registroTopico.nombre_Curso()).get());
+        topico.setAutor(usuarioRepository.findById(registroTopico.usuario_id()).get());
         Topico topicoRet = topicoRepository.save(topico);
 
-        DatosRespuestaTopico datosRespuestaTopico = new DatosRespuestaTopico(topicoRet.getId(), topicoRet.getTitulo(),
+        RespuestaTopico datosRespuestaTopico = new RespuestaTopico(topicoRet.getId(), topicoRet.getTitulo(),
                 topicoRet.getMensaje(), topicoRet.getFecha_creacion().toString(), topicoRet.getEstado().toString(),
                 topicoRet.getCurso().getId(), topicoRet.getAutor().getId());
 
@@ -44,57 +57,57 @@ public class TopicoService {
     public ResponseEntity<Page> listarTopicos(Pageable paginacion){
 
         return ResponseEntity.ok(topicoRepository.listarTopicos(paginacion)
-                .map(DatosListadoTopicoConRespuestas::new));
+                .map(ListadoRespuestaConTopico::new));
     }
 
-    public ResponseEntity<DatosListadoTopicoConRespuestas> listarDetalleTopicos(Long id){
+    public ResponseEntity<ListadoRespuestaConTopico> listarDetalleTopicos(Long id){
 
         if (topicoRepository.findById(id).isEmpty()){
-            throw new ValidacionDeIntegridad("El tópico no fue encontrado. Verifique el id.");
+            throw new ValidacionIntegridad("El tópico no fue encontrado. Verifique el id.");
         }
 
         Topico topico = topicoRepository.getReferenceById(id);
-        var datosTopico = new DatosListadoTopicoConRespuestas(topico);
+        var datosTopico = new ListadoRespuestaConTopico(topico);
 
         return ResponseEntity.ok(datosTopico);
     }
 
 
-    public ResponseEntity<RespuestaTopico> actualizarTopico(ActualizarTopico datosActualizarTopico,
+    public ResponseEntity<RespuestaTopico> actualizarTopico(ActualizarTopico actualizarTopico,
                                                             Long id, UriComponentsBuilder uriComponentsBuilder) {
 
         Curso curso = null;
         Usuario usuario = null;
 
         if (topicoRepository.findById(id).isEmpty()){
-            throw new ValidacionDeIntegridad("El tópico no fue encontrado. Verifique el id.");
+            throw new ValidacionIntegridad("El tópico no fue encontrado. Verifique el id.");
         }
 
-        if (ActualizarTopico.nombreCurso() != null) {
-            if (cursoRepository.findByNombreContainsIgnoreCase(ActualizarTopico.nombreCurso()).isEmpty()) {
-                throw new ValidacionDeIntegridad("El curso no fue encontrado");
+        if (actualizarTopico.nombre_Curso() != null) {
+            if (cursoRepository.findByNombreContainsIgnoreCase(actualizarTopico.nombre_Curso()).isEmpty()) {
+                throw new ValidacionIntegridad("El curso no fue encontrado");
             }
-            curso = cursoRepository.findByNombreContainsIgnoreCase(ActualizarTopico.nombreCurso()).get();
+            curso = cursoRepository.findByNombreContainsIgnoreCase(actualizarTopico.nombre_Curso()).get();
         }
 
-        if (ActualizarTopico.usuario_id() != null) {
-            if (usuarioRepository.findById(ActualizarTopico.usuario_id()).isEmpty()) {
-                throw new ValidacionDeIntegridad("El usuario no fue encontrado");
+        if (actualizarTopico.usuario_id() != null) {
+            if (usuarioRepository.findById(actualizarTopico.usuario_id()).isEmpty()) {
+                throw new ValidacionIntegridad("El usuario no fue encontrado");
             }
-            usuario = usuarioRepository.findById(ActualizarTopico.usuario_id()).get();
+            usuario = usuarioRepository.findById(actualizarTopico.usuario_id()).get();
         }
 
         Topico topico = topicoRepository.getReferenceById(id);
 
-        RegistroTopico RegistroTopico = new RegistroTopico(ActualizarTopico.titulo(),
-                ActualizarTopico.mensaje(), ActualizarTopico.nombre_Curso(),
-                ActualizarTopico.usuario_id());
+        RegistroTopico registroTopico = new RegistroTopico(actualizarTopico.titulo(),
+                actualizarTopico.mensaje(), actualizarTopico.nombre_Curso(),
+                actualizarTopico.usuario_id());
 
         validadores.forEach(v -> v.validar(RegistroTopico));
 
-        topico.actualizarDatos(ActualizarTopico, curso, usuario);
+        topico.actualizarDatos(actualizarTopico, Curso, Usuario);
 
-        RespuestaTopico RespuestaTopico = new RespuestaTopico(topico.getId(), topico.getTitulo(),
+        RespuestaTopico respuestaTopico = new RespuestaTopico(topico.getId(), topico.getTitulo(),
                 topico.getMensaje(), topico.getFecha_creacion().toString(), topico.getEstado().toString(),
                 topico.getCurso().getId(), topico.getAutor().getId());
 
