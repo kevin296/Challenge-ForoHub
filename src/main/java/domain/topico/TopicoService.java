@@ -34,13 +34,14 @@ public class TopicoService {
             throw new ValidacionIntegridad("El curso no fue encontrado");
         }
 
-        if (usuarioRepository.findById(datosRegistroTopico.usuario_id()).isEmpty()){
+        if (usuarioRepository.findById(registroTopico.usuario_id()).isEmpty()){
             throw new ValidacionIntegridad("El usuario no fue encontrado");
         }
 
-        validadores.forEach(v -> v.validar(registroTopico));
+        validar.forEach(v -> v.validar(registroTopico));
 
         var topico = new Topico(registroTopico);
+
         topico.setCurso(cursoRepository.findByNombreContainsIgnoreCase(registroTopico.nombre_Curso()).get());
         topico.setAutor(usuarioRepository.findById(registroTopico.usuario_id()).get());
         Topico topicoRet = topicoRepository.save(topico);
@@ -56,7 +57,7 @@ public class TopicoService {
 
     public ResponseEntity<Page> listarTopicos(Pageable paginacion){
 
-        return ResponseEntity.ok(topicoRepository.listarTopicos(paginacion)
+        return ResponseEntity.ok(topicoRepository.listadoTopico(paginacion)
                 .map(ListadoRespuestaConTopico::new));
     }
 
@@ -103,9 +104,9 @@ public class TopicoService {
                 actualizarTopico.mensaje(), actualizarTopico.nombre_Curso(),
                 actualizarTopico.usuario_id());
 
-        validadores.forEach(v -> v.validar(RegistroTopico));
+        validar.forEach(v -> v.validar(registroTopico));
 
-        topico.actualizarDatos(actualizarTopico, Curso, Usuario);
+        topico.actualizarDatos(actualizarTopico, curso, usuario);
 
         RespuestaTopico respuestaTopico = new RespuestaTopico(topico.getId(), topico.getTitulo(),
                 topico.getMensaje(), topico.getFecha_creacion().toString(), topico.getEstado().toString(),
@@ -113,7 +114,7 @@ public class TopicoService {
 
         URI url = uriComponentsBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
 
-        return ResponseEntity.created(url).body(RespuestaTopico);
+        return ResponseEntity.created(url).body(respuestaTopico);
 
     }
 
@@ -121,7 +122,7 @@ public class TopicoService {
     public ResponseEntity eliminarTopico(Long id) {
 
         if (topicoRepository.findById(id).isEmpty()){
-            throw new ValidacionDeIntegridad("El tópico no fue encontrado. Verifique el id.");
+            throw new ValidacionIntegridad("El tópico no fue encontrado. Verifique el id.");
         }
 
         topicoRepository.borrarTopico(id);

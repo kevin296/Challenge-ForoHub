@@ -1,7 +1,15 @@
 package domain.user;
 
+import Validaciones.ValidacionUsuario.ValidacionUsuario;
+import infra.ValidacionIntegridad;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.util.List;
 
 public class UsuarioService {
 
@@ -9,62 +17,62 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    List<ValidadorDeUsuarios> validadores;
+    List<ValidacionUsuario> validacion;
 
-    public ResponseEntity<RespuestaUsuario> registarUsuario(RegistroUsuario datosRegistroUsuario,
+    public ResponseEntity<RespuestaUsuario> registrarUsuario(RegistroUsuario registroUsuario,
                                                             UriComponentsBuilder uriComponentsBuilder) {
         var usuario = new Usuario(registroUsuario);
-        validadores.forEach(v -> v.validar(datosRegistroUsuario));
+        validacion.forEach(v -> v.validar(registroUsuario));
         Usuario usuarioConId = usuarioRepository.save(usuario);
 
-        RespuestaUsuario datosRespuestaUsuario = new DatosRespuestaUsuario(usuarioConId);
+        RespuestaUsuario respuestaUsuario = new RespuestaUsuario(usuarioConId);
         URI url = uriComponentsBuilder.path("/usuarios/{id}").buildAndExpand(usuarioConId.getId()).toUri();
 
-        return ResponseEntity.created(url).body(datosRespuestaUsuario);
+        return ResponseEntity.created(url).body(respuestaUsuario);
     }
 
-    public ResponseEntity<DatosRespuestaUsuario> actualizarUsuario(DatosActualizarUsuario datosActualizarUsuario, Long id, UriComponentsBuilder uriComponentsBuilder) {
+    public ResponseEntity<RespuestaUsuario> actualizarUsuario(ActualizarUsuario actualizarUsuario, Long id, UriComponentsBuilder uriComponentsBuilder) {
 
         if (usuarioRepository.findById(id).isEmpty()){
-            throw new ValidacionDeIntegridad("El usuario no fue encontrado. Verifique el id.");
+            throw new ValidacionIntegridad("El usuario no fue encontrado. Verifique el id.");
         }
 
         Usuario usuario = usuarioRepository.getReferenceById(id);
 
-        DatosRegistroUsuario datosRegistroUsuario = realizarCopiaActualizado(usuario, datosActualizarUsuario);
+        RegistroUsuario registroUsuario = realizarCopiaActualizado(usuario, actualizarUsuario);
 
-        validadores.forEach(v -> v.validar(datosRegistroUsuario));
+        validacion.forEach(v -> v.validar(registroUsuario));
 
-        if (datosActualizarUsuario.nombre() != null){
-            usuario.setNombre(datosActualizarUsuario.nombre());
+        if (actualizarUsuario.nombre() != null){
+            usuario.setNombre(actualizarUsuario.nombre());
         }
-        if (datosActualizarUsuario.email() != null){
-            usuario.setEmail(datosActualizarUsuario.email());
+        if (actualizarUsuario.email() != null){
+            usuario.setEmail(actualizarUsuario.email());
         }
-        if (datosActualizarUsuario.clave() != null){
-            usuario.setClave(datosActualizarUsuario.clave());
+        if (actualizarUsuario.clave() != null){
+            usuario.setClave(actualizarUsuario.clave());
         }
-        if (datosActualizarUsuario.perfil() != null){
-            usuario.setPerfil(Perfil.fromString(datosActualizarUsuario.perfil()));
+        if (actualizarUsuario.perfil() != null){
+            usuario.setPerfil(Perfiles.fromString(actualizarUsuario.perfil()));
         }
 
-        DatosRespuestaUsuario datosRespuestaUsuario = new DatosRespuestaUsuario(usuario);
+        RespuestaUsuario respuestaUsuario = new RespuestaUsuario(usuario);
         URI url = uriComponentsBuilder.path("/usuarios/{id}").buildAndExpand(usuario.getId()).toUri();
 
-        return ResponseEntity.created(url).body(datosRespuestaUsuario);
+        return ResponseEntity.created(url).body(respuestaUsuario);
 
     }
 
     public ResponseEntity<Page> listarUsuarios(Pageable paginacion) {
 
         return ResponseEntity.ok(usuarioRepository.listarUsuarios(paginacion)
-                .map(DatosRespuestaUsuario::new));
+                .map(RespuestaUsuario::new));
     }
 
     public ResponseEntity eliminarUsuario(Long id) {
 
         if (usuarioRepository.findById(id).isEmpty()){
-            throw new ValidacionDeIntegridad("El usuario no fue encontrado. Verifique el id.");
+            throw new ValidacionIntegridad("El usuario no fue encontrado. Verifique el id.");
         }
 
         usuarioRepository.deleteById(id);
@@ -72,27 +80,27 @@ public class UsuarioService {
         return ResponseEntity.noContent().build();
     }
 
-    private DatosRegistroUsuario realizarCopiaActualizado(Usuario usuario, DatosActualizarUsuario datosActualizarUsuario){
+    private RegistroUsuario realizarCopiaActualizado(Usuario usuario, ActualizarUsuario actualizarUsuario){
         String nombre = usuario.getNombre();
         String email = usuario.getEmail();
         String clave = usuario.getClave();
         String perfil = usuario.getPerfil().toString();
 
-        if (datosActualizarUsuario.nombre() != null){
-            nombre = datosActualizarUsuario.nombre();
+        if (actualizarUsuario.nombre() != null){
+            nombre = actualizarUsuario.nombre();
         }
-        if (datosActualizarUsuario.email() != null){
-            email = datosActualizarUsuario.email();
+        if (actualizarUsuario.email() != null){
+            email = actualizarUsuario.email();
         }
-        if (datosActualizarUsuario.clave() != null){
-            clave = datosActualizarUsuario.clave();
+        if (actualizarUsuario.clave() != null){
+            clave = actualizarUsuario.clave();
         }
-        if (ActualizarUsuario.perfil() != null){
-            perfil = datosActualizarUsuario.perfil();
+        if (actualizarUsuario.perfil() != null){
+            perfil = actualizarUsuario.perfil();
         }
 
-        DatosRegistroUsuario RegistroUsuario = new RegistroUsuario(nombre, email, clave, perfil);
-        return datosRegistroUsuario;
+        RegistroUsuario registroUsuario = new RegistroUsuario(nombre, email, clave, perfil);
+        return registroUsuario;
     }
 
 

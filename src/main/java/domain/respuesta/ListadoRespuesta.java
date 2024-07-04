@@ -15,7 +15,7 @@ public record ListadoRespuesta(Long id,
     public ListadoRespuesta(Respuesta respuesta){
         this(respuesta.getId(), respuesta.getMensaje(), respuesta.getFecha_creacion(),
                 respuesta.getAutor().getNombre(), respuesta.getSolucion(),
-                new DatosListadoTopico(respuesta.getTopico()));
+                new ListadoTopico(respuesta.getTopico()));
     }
 
 

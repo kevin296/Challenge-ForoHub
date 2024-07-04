@@ -5,7 +5,7 @@ public enum Perfiles {
     INSTRUCTOR("Instructor"),
     ESTUDIANTE("Estudiante");
 
-    private String perfil;
+    private String perfiles;
 
     Perfiles(String perfiles){
         this.perfiles = perfiles;

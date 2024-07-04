@@ -32,8 +32,8 @@ public class Respuesta {
     Usuario autor;
     private Boolean solucion;
 
-    public Respuesta(RegistroRespuesta datosRegistroRespuesta, Topico topico, Usuario autor) {
-        this.mensaje = datosRegistroRespuesta.mensaje();
+    public Respuesta(RegistroRespuesta registroRespuesta, Topico topico, Usuario autor) {
+        this.mensaje = registroRespuesta.mensaje();
 
         LocalDateTime ahora = LocalDateTime.now();
         DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -46,9 +46,9 @@ public class Respuesta {
 
 
     }
-    public void actualizarDatos(ActualizarRespuesta datosActualizarRespuesta, Topico topico, Usuario autor) {
-        if (datosActualizarRespuesta.mensaje() != null){
-            this.mensaje = datosActualizarRespuesta.mensaje();
+    public void actualizarDatos(ActualizarRespuesta actualizarRespuesta, Topico topico, Usuario autor) {
+        if (actualizarRespuesta.mensaje() != null){
+            this.mensaje = actualizarRespuesta.mensaje();
         }
         if (topico != null){
             this.topico = topico;
@@ -56,8 +56,8 @@ public class Respuesta {
         if (autor != null){
             this.autor = autor;
         }
-        if (datosActualizarRespuesta.solucion() != null){
-            if (datosActualizarRespuesta.solucion()){
+        if (actualizarRespuesta.solucion() != null){
+            if (actualizarRespuesta.solucion()){
                 this.solucion = true;
                 this.topico.setEstado(Estado.SOLUCIONADO);
             }else{

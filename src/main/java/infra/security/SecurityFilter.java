@@ -1,48 +1,53 @@
-package infra.security;
-
-import domain.user.UsuarioRepository;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.token.TokenService;
+import org.springframework.security.oauth2.core.DefaultOAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 
 import java.io.IOException;
 
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
-    @Autowired
-    private TokenService tokenService;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    // ...
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // Obtener el token del header
-        var authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader("Authorization");
 
-        if (authHeader != null){
-            var token = authHeader.replace("Bearer ", "");       // Nombre del header, y quita la palabra "Bearer" del log y q devuelva solo el token
-            var username = tokenService.getSubject(token);
-            if (username != null){
-                // Token es válido
-                var usuario = usuarioRepository.findByEmail(username);
-                var authentication = new UsernamePasswordAuthenticationToken(usuario, null,
-                        usuario.getAuthorities());      // Forza un inicio de sesión
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.replace("Bearer ", "");
+
+            // Decode the JWT token
+            Jwt jwt = jwtDecoder.decode(token);
+
+            if (jwt != null) {
+                String username = jwt.getSubject();
+
+                if (username != null) {
+                    // Token is valid
+                    var usuario = usuarioRepository.findByEmail(username);
+                    if (usuario != null) {
+                        // Create authentication token
+                        var authentication = new UsernamePasswordAuthenticationToken(
+                                new DefaultOAuth2AuthenticatedPrincipal(jwt.getClaims(), jwt.getHeaders(), usuario.getAuthorities()),
+                                token,
+                                usuario.getAuthorities()
+                        );
+
+                        // Set authentication in security context
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
+                }
             }
         }
-        filterChain.doFilter(request, response);    // Llama al siguiente filtro (son dos) para poder mostrar los datos
 
+        filterChain.doFilter(request, response);    // Call the next filter in the chain
     }
-
-
-
 }

@@ -2,15 +2,21 @@ package domain.topico;
 
 public enum Estado {
     SOLUCIONADO("Solucionado"),
-    SIN_SOLUCION("En_Espera");
+    SIN_SOLUCION("En Espera");
 
-    private String status;
-    Estado(String status){
+    private final String status;
+
+    Estado(String status) {
         this.status = status;
     }
-    public static Estado fromString(String text){
-        for(Estado estado : Estado.values()){
-            if(estado.status.equalsIgnoreCase(text)){
+
+    public String getStatus() {
+        return status;
+    }
+
+    public static Estado fromString(String text) {
+        for (Estado estado : Estado.values()) {
+            if (estado.status.equalsIgnoreCase(text)) {
                 return estado;
             }
         }
