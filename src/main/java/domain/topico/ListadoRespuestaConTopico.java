@@ -17,8 +17,9 @@ public record ListadoRespuestaConTopico(
         String autor,
         List<ListadoRespuestaConTopico> respuestas
 ) {
-    // Constructor personalizado que toma un objeto Topico o Respuesta
+
     public ListadoRespuestaConTopico(Topico topico) {
+
         this(
                 topico.getId(),
                 topico.getTitulo(),
@@ -28,7 +29,7 @@ public record ListadoRespuestaConTopico(
                 topico.getCurso().getNombre(),
                 topico.getAutor().getNombre(),
                 topico.getRespuestas().stream()
-                        .map(ListadoRespuestaConTopico::new) // Assuming ListadoRespuestaConTopico can handle Topico
+                        .map(ListadoRespuestaConTopico::new) 
                         .collect(Collectors.toList())
         );
     }
@@ -37,8 +38,8 @@ public record ListadoRespuestaConTopico(
 
     public ListadoRespuestaConTopico(Respuesta respuesta) {
         this(
-                null, // id (assuming it's not directly available from Respuesta)
-                respuesta.getTopico().getTitulo(), // use the topico's title
+                null, 
+                respuesta.getTopico().getTitulo(), 
                 respuesta.getMensaje(),
                 respuesta.getFecha_creacion(),
                 respuesta.getTopico().getEstado().toString(),
