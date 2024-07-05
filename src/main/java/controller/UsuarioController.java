@@ -6,6 +6,7 @@ import domain.user.RegistroUsuario;
 import domain.user.RespuestaUsuario;
 import domain.user.UsuarioService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
