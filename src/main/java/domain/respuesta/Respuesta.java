@@ -53,9 +53,9 @@ public class Respuesta {
         if (actualizarRespuesta.solucion() != null) {
             this.solucion = actualizarRespuesta.solucion();
             if (this.solucion) {
-                this.topico.getStatus(Estado.SOLUCIONADO);
+                this.topico.setEstado(Estado.SOLUCIONADO); // Corregido: Utiliza setEstado para establecer el estado
             } else {
-                this.topico.setStatus(Estado.SIN_SOLUCION);
+                this.topico.setEstado(Estado.SIN_SOLUCION); // Corregido: Utiliza setEstado para establecer el estado
             }
         }
     }

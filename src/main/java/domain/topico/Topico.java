@@ -67,5 +67,8 @@ public class Topico {
         }
     }
 
-
+    // Método para obtener el estado actual
+    public Estado getEstado() {
+        return estado;
+    }
 }
