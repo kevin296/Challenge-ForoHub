@@ -8,7 +8,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -25,7 +24,7 @@ public class Respuesta {
     private String mensaje;
     private LocalDateTime fecha_creacion;
     @ManyToOne
-    @JoinColumn(name="topico_id")
+    @JoinColumn(name = "topico_id")
     private Topico topico;
     @ManyToOne
     @JoinColumn(name = "usuario_id")
@@ -43,9 +42,8 @@ public class Respuesta {
         this.topico = topico;
         this.autor = autor;
         this.solucion = false;
-
-
     }
+
     public void actualizarDatos(ActualizarRespuesta actualizarRespuesta, Topico topico, Usuario autor) {
         if (actualizarRespuesta.mensaje() != null){
             this.mensaje = actualizarRespuesta.mensaje();

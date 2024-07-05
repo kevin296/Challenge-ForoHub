@@ -1,5 +1,6 @@
 package domain.user;
 
+import jakarta.validation.ValidationException;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,6 +22,13 @@ public record RegistroUsuario(
         this.email = email;
         this.clave = clave;
         this.perfil = perfil;
+    }
+
+    public void validar() {
+    
+        if (!perfil().equalsIgnoreCase(String.valueOf(Perfiles.ESTUDIANTE))){
+            throw new ValidationException("Sólo se puede registrar como Estudiante");
+        }
     }
 
 }
