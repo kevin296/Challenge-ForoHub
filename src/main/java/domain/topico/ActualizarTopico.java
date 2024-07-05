@@ -10,4 +10,28 @@ public record ActualizarTopico(
 
 
 ) {
+    @Override
+    public String mensaje() {
+        return mensaje;
+    }
+
+    @Override
+    public String nombre_Curso() {
+        return nombre_Curso;
+    }
+
+    @Override
+    public String status() {
+        return status;
+    }
+
+    @Override
+    public String titulo() {
+        return titulo;
+    }
+
+    @Override
+    public Long usuario_id() {
+        return usuario_id;
+    }
 }

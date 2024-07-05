@@ -18,4 +18,23 @@ public record RegistroTopico( @NotBlank(message = "Titulo debe de estar lleno")
         this.nombre_Curso = nombre_Curso;
         this.usuario_id = usuario_id;
     }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getMensaje() {
+        return mensaje;
+    }
+
+    public String getNombre_Curso() {
+        return nombre_Curso;
+    }
+
+    public Long getUsuario_id() {
+        return usuario_id;
+    }
+
+
+
 }

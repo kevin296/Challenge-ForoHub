@@ -52,11 +52,11 @@ public class Topico {
     }
 
     public void actualizarDatos(ActualizarTopico actualizarTopico, Curso curso, Usuario autor){
-        if (actualizarTopico.getTitulo() != null) {
-            this.titulo = actualizarTopico.getTitulo();
+        if (actualizarTopico.titulo() != null) {
+            this.titulo = actualizarTopico.titulo();
         }
-        if (actualizarTopico.getMensaje() != null){
-            this.mensaje = actualizarTopico.getMensaje();
+        if (actualizarTopico.mensaje() != null){
+            this.mensaje = actualizarTopico.mensaje();
         }
         if (curso != null){
             this.curso = curso;
@@ -68,6 +68,8 @@ public class Topico {
             this.estado = Estado.fromString(actualizarTopico.status());
         }
     }
-
+    public void setEstado(Estado estado) {
+        this.estado = estado;
+    }
 
 }

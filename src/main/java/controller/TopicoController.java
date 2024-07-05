@@ -15,6 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 
 
+
 @RestController
 @RequestMapping("/topicos")
 @SecurityRequirement(name = "bearer-key")
@@ -31,8 +32,7 @@ public class TopicoController {
     }
 
     @GetMapping
-    public ResponseEntity<Page> listadoTopicos(@PageableDefault(size = 10) Pageable paginacion){
-
+    public ResponseEntity<Page<ListadoTopico>> listadoTopicos(@PageableDefault(size = 10) Pageable paginacion){
         return service.listarTopicos(paginacion);
     }
 

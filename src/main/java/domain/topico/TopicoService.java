@@ -44,7 +44,7 @@ public class TopicoService {
         Topico topico = new Topico(registroTopico, curso, autor);
         Topico topicoRet = topicoRepository.save(topico);
 
-        RespuestaTopico datosRespuestaTopico = new RespuestaTopico(
+        RespuestaTopico respuestaTopico = new RespuestaTopico(
                 topicoRet.getId(),
                 topicoRet.getTitulo(),
                 topicoRet.getMensaje(),
@@ -56,7 +56,7 @@ public class TopicoService {
 
         URI url = uriComponentsBuilder.path("/topicos/{id}").buildAndExpand(topicoRet.getId()).toUri();
 
-        return ResponseEntity.created(url).body(datosRespuestaTopico);
+        return ResponseEntity.created(url).body(respuestaTopico);
     }
 
     public ResponseEntity<Page<ListadoTopico>> listarTopicos(Pageable paginacion){
@@ -82,13 +82,13 @@ public class TopicoService {
         Curso curso = null;
         Usuario usuario = null;
 
-        if (actualizarTopico.getNombre_Curso() != null) {
-            curso = cursoRepository.findByNombreContainsIgnoreCase(actualizarTopico.getNombre_Curso())
+        if (actualizarTopico.nombre_Curso() != null) {
+            curso = cursoRepository.findByNombreContainsIgnoreCase(actualizarTopico.nombre_Curso())
                     .orElseThrow(() -> new ValidacionIntegridad("El curso no fue encontrado"));
         }
 
-        if (actualizarTopico.getUsuario_id() != null) {
-            usuario = usuarioRepository.findById(actualizarTopico.getUsuario_id())
+        if (actualizarTopico.usuario_id() != null) {
+            usuario = usuarioRepository.findById(actualizarTopico.usuario_id())
                     .orElseThrow(() -> new ValidacionIntegridad("El usuario no fue encontrado"));
         }
 
