@@ -16,6 +16,8 @@ public record ListadoRespuesta(Long id,
         this(respuesta.getId(), respuesta.getMensaje(), respuesta.getFecha_creacion(),
                 respuesta.getAutor().getNombre(), respuesta.getSolucion(),
                 new ListadoTopico(respuesta.getTopico()));
+
+
     }
 
 
