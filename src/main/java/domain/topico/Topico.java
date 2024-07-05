@@ -62,7 +62,7 @@ public class Topico {
         if (autor != null){
             this.autor = autor;
         }
-        if (actualizarTopico.getStatus() != null){
+        if (actualizarTopico.getStatus != null){
             this.estado = Estado.fromString(actualizarTopico.getStatus());
         }
     }

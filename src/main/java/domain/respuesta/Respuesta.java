@@ -39,7 +39,6 @@ public class Respuesta {
         this.autor = autor;
         this.solucion = false;
     }
-
     public void actualizarDatos(ActualizarRespuesta actualizarRespuesta, Topico topico, Usuario autor) {
         if (actualizarRespuesta.mensaje() != null) {
             this.mensaje = actualizarRespuesta.mensaje();
@@ -53,10 +52,12 @@ public class Respuesta {
         if (actualizarRespuesta.solucion() != null) {
             this.solucion = actualizarRespuesta.solucion();
             if (this.solucion) {
-                this.topico.setEstado(Estado.SOLUCIONADO); // Corregido: Utiliza setEstado para establecer el estado
-            } else {
-                this.topico.setEstado(Estado.SIN_SOLUCION); // Corregido: Utiliza setEstado para establecer el estado
+                this.topico.getEstado(); // Esto obtiene el estado actual, pero no se usa para establecerlo
+                this.topico.setEstado(Estado.SOLUCIONADO); // Esto intenta usar setEstado, pero no está definido
+                this.topico.setEstado(Estado.SOLUCIONADO); // Esto no está definido
             }
         }
     }
+
+
 }
