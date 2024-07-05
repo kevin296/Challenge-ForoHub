@@ -28,7 +28,7 @@ public class Respuesta {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
-    private Usuario autor;
+    Usuario autor;
 
     private Boolean solucion;
 
@@ -60,4 +60,51 @@ public class Respuesta {
         }
     }
 
+    public Topico getTopico() {
+        return topico;
+    }
+
+    public void setTopico(Topico topico) {
+        this.topico = topico;
+    }
+
+    public String getMensaje() {
+        return mensaje;
+    }
+
+    public void setMensaje(String mensaje) {
+        this.mensaje = mensaje;
+    }
+
+    public LocalDateTime getFecha_creacion() {
+        return fecha_creacion;
+    }
+
+    public void setFecha_creacion(LocalDateTime fechaCreacion) {
+        this.fecha_creacion = fechaCreacion;
+    }
+
+    public Usuario getAutor() {
+        return autor;
+    }
+
+    public void setAutor(Usuario autor) {
+        this.autor = autor;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Boolean getSolucion() {
+        return solucion;
+    }
+
+    public void setSolucion(Boolean solucion) {
+        this.solucion = solucion;
+    }
 }

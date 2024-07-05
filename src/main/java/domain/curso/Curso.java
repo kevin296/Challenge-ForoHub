@@ -22,7 +22,11 @@ public class Curso {
     private Categoria categoria;
 
 
+    public Long getId() {
+        return id;
+    }
 
-
-
+    public String getNombre() {
+        return nombre;
+    }
 }
