@@ -21,6 +21,7 @@ public record ListadoRespuestaConTopico(
     public ListadoRespuestaConTopico(Topico topico) {
 
         this(
+
                 topico.getId(),
                 topico.getTitulo(),
                 topico.getMensaje(),

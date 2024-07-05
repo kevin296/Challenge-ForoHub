@@ -38,26 +38,26 @@ public class Respuesta {
         this.topico = topico;
         this.autor = autor;
         this.solucion = false;
+
     }
     public void actualizarDatos(ActualizarRespuesta actualizarRespuesta, Topico topico, Usuario autor) {
-        if (actualizarRespuesta.mensaje() != null) {
+        if (actualizarRespuesta.mensaje() != null){
             this.mensaje = actualizarRespuesta.mensaje();
         }
-        if (topico != null) {
+        if (topico != null){
             this.topico = topico;
         }
-        if (autor != null) {
+        if (autor != null){
             this.autor = autor;
         }
-        if (actualizarRespuesta.solucion() != null) {
-            this.solucion = actualizarRespuesta.solucion();
-            if (this.solucion) {
-                this.topico.getEstado(); // Esto obtiene el estado actual, pero no se usa para establecerlo
-                this.topico.setEstado(Estado.SOLUCIONADO); // Esto intenta usar setEstado, pero no está definido
-                this.topico.setEstado(Estado.SOLUCIONADO); // Esto no está definido
+        if (actualizarRespuesta.solucion() != null){
+            if (actualizarRespuesta.solucion()){
+                this.solucion = true;
+                this.topico.setEstado(Estado.SOLUCIONADO);
+            }else{
+                this.solucion = false;
             }
         }
     }
-
 
 }

@@ -1,5 +1,6 @@
 package domain.topico;
 
+
 import domain.curso.Curso;
 import domain.respuesta.Respuesta;
 import domain.user.Usuario;
@@ -7,9 +8,9 @@ import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.List;
+
 
 @Entity
 @Table(name = "topico")
@@ -41,6 +42,7 @@ public class Topico {
     private List<Respuesta> respuestas;
 
     public Topico(RegistroTopico registroTopico, Curso curso, Usuario autor) {
+
         this.titulo = registroTopico.getTitulo();
         this.mensaje = registroTopico.getMensaje();
         this.fecha_creacion = LocalDateTime.now();
@@ -62,13 +64,10 @@ public class Topico {
         if (autor != null){
             this.autor = autor;
         }
-        if (actualizarTopico.getStatus != null){
-            this.estado = Estado.fromString(actualizarTopico.getStatus());
+        if (actualizarTopico.status() != null){
+            this.estado = Estado.fromString(actualizarTopico.status());
         }
     }
 
-    // Método para obtener el estado actual
-    public Estado getEstado() {
-        return estado;
-    }
+
 }
