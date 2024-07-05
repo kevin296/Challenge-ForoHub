@@ -4,7 +4,7 @@ import domain.user.Perfiles;
 import domain.user.RegistroUsuario;
 import jakarta.validation.ValidationException;
 
-public class PerfilEstudiante {
+public class PerfilEstudiante implements ValidacionUsuario {
 
     
     @Override
