@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface RespuestaRepository extends JpaRepository<Respuesta, Long> {
@@ -13,9 +14,8 @@ public interface RespuestaRepository extends JpaRepository<Respuesta, Long> {
     Page<Respuesta> listarRespuestas(Pageable paginacion);
 
     @Modifying
-    @Query("delete from Respuesta r where r.id=:idRespuesta")
+    @Transactional
+    @Query("DELETE FROM Respuesta r WHERE r.id = :idRespuesta")
     void borrarRespuesta(Long idRespuesta);
-
-
-
 }
+

@@ -25,10 +25,8 @@ public record RegistroUsuario(
     }
 
     public void validar() {
-    
-        if (!perfil().equalsIgnoreCase(String.valueOf(Perfiles.ESTUDIANTE))){
+        if (!perfil.equalsIgnoreCase(Perfiles.ESTUDIANTE.toString())) {
             throw new ValidationException("Sólo se puede registrar como Estudiante");
         }
     }
-
 }

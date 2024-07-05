@@ -1,6 +1,5 @@
 package domain.user;
 
-import Validaciones.ValidacionUsuario.ValidacionUsuario;
 import infra.ValidacionIntegridad;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,12 +16,12 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    List<ValidacionUsuario> validacion;
+    List<ValidacionUsuario> validaciones;
 
     public ResponseEntity<RespuestaUsuario> registrarUsuario(RegistroUsuario registroUsuario,
-                                                            UriComponentsBuilder uriComponentsBuilder) {
+                                                             UriComponentsBuilder uriComponentsBuilder) {
         var usuario = new Usuario(registroUsuario);
-        validacion.forEach(v -> v.validar(registroUsuario));
+        validaciones.forEach(v -> v.validar(registroUsuario));
         Usuario usuarioConId = usuarioRepository.save(usuario);
 
         RespuestaUsuario respuestaUsuario = new RespuestaUsuario(usuarioConId);
@@ -31,28 +30,29 @@ public class UsuarioService {
         return ResponseEntity.created(url).body(respuestaUsuario);
     }
 
-    public ResponseEntity<RespuestaUsuario> actualizarUsuario(ActualizarUsuario actualizarUsuario, Long id, UriComponentsBuilder uriComponentsBuilder) {
+    public ResponseEntity<RespuestaUsuario> actualizarUsuario(ActualizarUsuario actualizarUsuario, Long id,
+                                                              UriComponentsBuilder uriComponentsBuilder) {
 
-        if (usuarioRepository.findById(id).isEmpty()){
+        if (usuarioRepository.findById(id).isEmpty()) {
             throw new ValidacionIntegridad("El usuario no fue encontrado. Verifique el id.");
         }
 
         Usuario usuario = usuarioRepository.getReferenceById(id);
 
-        RegistroUsuario registroUsuario = realizarCopiaActualizado(usuario, actualizarUsuario);
+        RegistroUsuario registroActualizado = realizarCopiaActualizado(usuario, actualizarUsuario);
 
-        validacion.forEach(v -> v.validar(registroUsuario));
+        validaciones.forEach(v -> v.validar(registroActualizado));
 
-        if (actualizarUsuario.nombre() != null){
+        if (actualizarUsuario.nombre() != null) {
             usuario.setNombre(actualizarUsuario.nombre());
         }
-        if (actualizarUsuario.email() != null){
+        if (actualizarUsuario.email() != null) {
             usuario.setEmail(actualizarUsuario.email());
         }
-        if (actualizarUsuario.clave() != null){
+        if (actualizarUsuario.clave() != null) {
             usuario.setClave(actualizarUsuario.clave());
         }
-        if (actualizarUsuario.perfil() != null){
+        if (actualizarUsuario.perfil() != null) {
             usuario.setPerfil(Perfiles.fromString(actualizarUsuario.perfil()));
         }
 
@@ -60,18 +60,16 @@ public class UsuarioService {
         URI url = uriComponentsBuilder.path("/usuarios/{id}").buildAndExpand(usuario.getId()).toUri();
 
         return ResponseEntity.created(url).body(respuestaUsuario);
-
     }
 
     public ResponseEntity<Page> listarUsuarios(Pageable paginacion) {
-
         return ResponseEntity.ok(usuarioRepository.listarUsuarios(paginacion)
                 .map(RespuestaUsuario::new));
     }
 
     public ResponseEntity eliminarUsuario(Long id) {
 
-        if (usuarioRepository.findById(id).isEmpty()){
+        if (usuarioRepository.findById(id).isEmpty()) {
             throw new ValidacionIntegridad("El usuario no fue encontrado. Verifique el id.");
         }
 
@@ -80,28 +78,25 @@ public class UsuarioService {
         return ResponseEntity.noContent().build();
     }
 
-    private RegistroUsuario realizarCopiaActualizado(Usuario usuario, ActualizarUsuario actualizarUsuario){
+    private RegistroUsuario realizarCopiaActualizado(Usuario usuario, ActualizarUsuario actualizarUsuario) {
         String nombre = usuario.getNombre();
         String email = usuario.getEmail();
         String clave = usuario.getClave();
         String perfil = usuario.getPerfil().toString();
 
-        if (actualizarUsuario.nombre() != null){
+        if (actualizarUsuario.nombre() != null) {
             nombre = actualizarUsuario.nombre();
         }
-        if (actualizarUsuario.email() != null){
+        if (actualizarUsuario.email() != null) {
             email = actualizarUsuario.email();
         }
-        if (actualizarUsuario.clave() != null){
+        if (actualizarUsuario.clave() != null) {
             clave = actualizarUsuario.clave();
         }
-        if (actualizarUsuario.perfil() != null){
+        if (actualizarUsuario.perfil() != null) {
             perfil = actualizarUsuario.perfil();
         }
 
-        RegistroUsuario registroUsuario = new RegistroUsuario(nombre, email, clave, perfil);
-        return registroUsuario;
+        return new RegistroUsuario(nombre, email, clave, perfil);
     }
-
-
 }
