@@ -86,4 +86,32 @@ public class Usuario implements UserDetails {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public Object getPerfil() {
+        return perfil;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setClave(String clave) {
+        this.clave = clave;
+    }
+
+    public String getClave() {
+        return clave;
+    }
+
+    public void setPerfil(Perfiles perfil) {
+        this.perfil = perfil;
+    }
 }
